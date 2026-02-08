@@ -19,7 +19,10 @@
         function makeCode() {		
             var elText = document.getElementById("text");
             // 한글 입력을 위한 인코딩 처리
-            var content = unescape(encodeURIComponent(elText.value));
+            // unescape is deprecated; using a modern approach to convert UTF-8 to byte string
+            var content = encodeURIComponent(elText.value).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            });
             qrcode.makeCode(content);
         }
         // 페이지 로드 시 처음 한 번 실행
