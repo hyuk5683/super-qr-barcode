@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로또 번호 추첨기</title>
-    <link rel="stylesheet" href="style.css">
+    <title>QR 코드 생성기</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>로또 번호 추첨</h1>
-        <div id="lottery-numbers" class="numbers-display">
-            <!-- Lottery numbers will be displayed here -->
-        </div>
-        <button id="generate-button">번호 생성</button>
-    </div>
-    <script src="main.js"></script>
+    <h2>간단 QR 코드 생성기</h2>
+    <input id="text" type="text" value="https://google.com" />
+    <button onclick="makeCode()">생성하기</button>
+    <div id="qrcode" style="margin-top:20px;"></div>
+
+    <script>
+        var qrcode = new QRCode(document.getElementById("qrcode"));
+        function makeCode() {		
+            var elText = document.getElementById("text");
+            qrcode.makeCode(elText.value);
+        }
+    </script>
 </body>
 </html>
