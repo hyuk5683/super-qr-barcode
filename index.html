@@ -1,21 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>QR 코드 생성기</title>
+    <meta charset="UTF-8"> <title>Hyuk Lee의 QR 생성기</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+    </style>
 </head>
 <body>
-    <h2>간단 QR 코드 생성기</h2>
-    <input id="text" type="text" value="https://google.com" />
+    <h2>Hyuk Lee의 한글 지원 QR 생성기</h2>
+    <input id="text" type="text" value="안녕하세요" style="width:200px;" />
     <button onclick="makeCode()">생성하기</button>
-    <div id="qrcode" style="margin-top:20px;"></div>
+    <div id="qrcode"></div>
 
     <script>
         var qrcode = new QRCode(document.getElementById("qrcode"));
         function makeCode() {		
             var elText = document.getElementById("text");
-            qrcode.makeCode(elText.value);
+            // 한글 입력을 위한 인코딩 처리
+            var content = unescape(encodeURIComponent(elText.value));
+            qrcode.makeCode(content);
         }
+        // 페이지 로드 시 처음 한 번 실행
+        makeCode();
     </script>
 </body>
 </html>
