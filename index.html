@@ -1,32 +1,196 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-    <meta charset="UTF-8"> <title>Hyuk Lee의 QR 생성기</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Ultimate QR Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- CJK + Styling fully supported -->
+  <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f1115;
+      color: #e6e6eb;
+    }
+    .container {
+      width: min(96vw, 460px);
+      background: #1a1d24;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    h2 { margin-top: 0; }
+    label { font-size: 13px; margin-top: 12px; display: block; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #0f1115;
+      color: #fff;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 14px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg,#4c8dff,#7f5cff);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .row { display: flex; gap: 10px; }
+    .row > * { flex: 1; }
+    #qr-preview { margin-top: 20px; display: flex; justify-content: center; }
+    .history {
+      margin-top: 16px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .history div {
+      padding: 6px;
+      border-bottom: 1px solid #2a2d36;
+      cursor: pointer;
+      opacity: 0.85;
+    }
+    .history div:hover { opacity: 1; }
+  </style>
 </head>
 <body>
-    <h2>Hyuk Lee의 한글 지원 QR 생성기</h2>
-    <input id="text" type="text" value="안녕하세요" style="width:200px;" />
-    <button onclick="makeCode()">생성하기</button>
-    <div id="qrcode"></div>
+  <div class="container">
+    <h2>Ultimate QR Generator</h2>
 
-    <script>
-        var qrcode = new QRCode(document.getElementById("qrcode"));
-        function makeCode() {		
-            var elText = document.getElementById("text");
-            // 한글 입력을 위한 인코딩 처리
-            // unescape is deprecated; using a modern approach to convert UTF-8 to byte string
-            var content = encodeURIComponent(elText.value).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-                return String.fromCharCode('0x' + p1);
-            });
-            qrcode.makeCode(content);
-        }
-        // 페이지 로드 시 처음 한 번 실행
-        makeCode();
-    </script>
+    <label>Mode</label>
+    <select id="mode">
+      <option value="text">Text / URL</option>
+      <option value="email">Email</option>
+      <option value="sms">SMS</option>
+      <option value="location">Location</option>
+      <option value="vcard">vCard</option>
+      <option value="wifi">WiFi</option>
+    </select>
+
+    <label>Content</label>
+    <input id="input" placeholder="Supports English, Korean, Japanese, Chinese" />
+
+    <div class="row">
+      <div>
+        <label>Size</label>
+        <select id="size">
+          <option>160</option>
+          <option selected>200</option>
+          <option>256</option>
+        </select>
+      </div>
+      <div>
+        <label>Foreground</label>
+        <input type="color" id="color1" value="#ffffff" />
+      </div>
+      <div>
+        <label>Gradient</label>
+        <input type="color" id="color2" value="#7f5cff" />
+      </div>
+    </div>
+
+    <label>Logo (optional)</label>
+    <input type="file" id="logo" accept="image/*" />
+
+    <button id="generate">Generate QR</button>
+    <button id="download">Download PNG</button>
+
+    <div id="qr-preview"></div>
+
+    <div class="history" id="history"></div>
+  </div>
+
+  <script>
+    const input = document.getElementById('input');
+    const mode = document.getElementById('mode');
+    const size = document.getElementById('size');
+    const color1 = document.getElementById('color1');
+    const color2 = document.getElementById('color2');
+    const logoInput = document.getElementById('logo');
+    const preview = document.getElementById('qr-preview');
+    const historyBox = document.getElementById('history');
+
+    let qr = new QRCodeStyling({ width: 200, height: 200, data: '' });
+
+    function buildData() {
+      const v = input.value.trim();
+      if (!v) return '';
+      switch (mode.value) {
+        case 'email': return `mailto:${v}`;
+        case 'sms': return `sms:${v}`;
+        case 'location': return `https://maps.google.com/?q=${encodeURIComponent(v)}`;
+        case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${v}\nEND:VCARD`;
+        case 'wifi': return `WIFI:T:WPA;S:${v};P:password;;`;
+        default: return v;
+      }
+    }
+
+    function saveHistory(data) {
+      const list = JSON.parse(localStorage.getItem('qr-history') || '[]');
+      list.unshift(data);
+      localStorage.setItem('qr-history', JSON.stringify(list.slice(0, 10)));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyBox.innerHTML = '';
+      const list = JSON.parse(localStorage.getItem('qr-history') || '[]');
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.textContent = item;
+        div.onclick = () => { input.value = item; generate(); };
+        historyBox.appendChild(div);
+      });
+    }
+
+    function generate() {
+      const data = buildData();
+      if (!data) return;
+
+      preview.innerHTML = '';
+      qr = new QRCodeStyling({
+        width: Number(size.value),
+        height: Number(size.value),
+        data,
+        image: logoInput.files[0] ? URL.createObjectURL(logoInput.files[0]) : undefined,
+        dotsOptions: {
+          gradient: {
+            type: 'linear',
+            rotation: 0,
+            colorStops: [
+              { offset: 0, color: color1.value },
+              { offset: 1, color: color2.value }
+            ]
+          }
+        },
+        backgroundOptions: { color: 'transparent' },
+        imageOptions: { crossOrigin: 'anonymous', margin: 6 }
+      });
+
+      qr.append(preview);
+      saveHistory(input.value);
+    }
+
+    document.getElementById('generate').onclick = generate;
+    document.getElementById('download').onclick = () => qr.download({ extension: 'png' });
+    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') generate(); });
+
+    renderHistory();
+  </script>
 </body>
 </html>
