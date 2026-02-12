@@ -661,6 +661,14 @@
             const data = getFormattedData();
             if (!data) { alert('QR 코드를 먼저 생성해주세요.'); return; }
             
+            // 여기에 구글 애널리틱스 추적 코드 추가!
+            if (typeof gtag === 'function') {
+                gtag('event', 'qr_download', {
+                    'event_category': 'engagement',
+                    'event_label': 'Format: ' + format
+                });
+            }
+
             const canvas = await generateQR(data, { width: 512, margin: 8 });
             if (!canvas) return;
 
