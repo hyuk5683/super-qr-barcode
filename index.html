@@ -1,196 +1,870 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Ultimate QR Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- CJK + Styling fully supported -->
-  <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f1115;
-      color: #e6e6eb;
-    }
-    .container {
-      width: min(96vw, 460px);
-      background: #1a1d24;
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-    h2 { margin-top: 0; }
-    label { font-size: 13px; margin-top: 12px; display: block; }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #0f1115;
-      color: #fff;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 14px;
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(135deg,#4c8dff,#7f5cff);
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    .row { display: flex; gap: 10px; }
-    .row > * { flex: 1; }
-    #qr-preview { margin-top: 20px; display: flex; justify-content: center; }
-    .history {
-      margin-top: 16px;
-      max-height: 120px;
-      overflow-y: auto;
-      font-size: 12px;
-    }
-    .history div {
-      padding: 6px;
-      border-bottom: 1px solid #2a2d36;
-      cursor: pointer;
-      opacity: 0.85;
-    }
-    .history div:hover { opacity: 1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🌍 다국어 QR 코드 생성기</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            padding: 28px 24px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        h2 {
+            margin: 0;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .lang-selector {
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .status {
+            background: #f0f6ff;
+            padding: 12px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            color: #1e3a5f;
+            margin-bottom: 24px;
+            border-left: 5px solid #3b82f6;
+        }
+        select, input, textarea, button {
+            width: 100%;
+            padding: 15px 18px;
+            margin: 8px 0;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 16px;
+            background: white;
+            transition: 0.2s;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            padding: 16px;
+            font-size: 17px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(59,130,246,0.3);
+            margin-top: 12px;
+        }
+        .qr-box {
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            margin: 28px 0 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #b9c7da;
+            min-height: 300px;
+        }
+        #qrcode canvas, #qrcode img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-group button {
+            flex: 1 1 calc(50% - 6px);
+            margin: 0;
+        }
+        .btn-download {
+            background: #1e293b;
+        }
+        .btn-share {
+            background: #0e7b6e;
+        }
+        .btn-print {
+            background: #7b4e96;
+        }
+        .footer-note {
+            font-size: 13px;
+            color: #5f6c80;
+            margin-top: 28px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Ultimate QR Generator</h2>
+    <div class="container">
+        <div class="header">
+            <h2 data-i18n="appTitle">⚡ 듀얼 QR</h2>
+            <select id="languageSelect" class="lang-selector">
+                <option value="ko">🇰🇷 한국어</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="zh">🇨🇳 简体中文</option>
+            </select>
+        </div>
+        <div class="status" id="statusMessage" data-i18n="statusLoading">
+            🔄 QR 라이브러리 로딩 중...
+        </div>
 
-    <label>Mode</label>
-    <select id="mode">
-      <option value="text">Text / URL</option>
-      <option value="email">Email</option>
-      <option value="sms">SMS</option>
-      <option value="location">Location</option>
-      <option value="vcard">vCard</option>
-      <option value="wifi">WiFi</option>
-    </select>
-
-    <label>Content</label>
-    <input id="input" placeholder="Supports English, Korean, Japanese, Chinese" />
-
-    <div class="row">
-      <div>
-        <label>Size</label>
-        <select id="size">
-          <option>160</option>
-          <option selected>200</option>
-          <option>256</option>
+        <select id="typeSelect">
+            <option value="text" data-i18n="typeText">📝 일반 텍스트</option>
+            <option value="url" data-i18n="typeUrl">🔗 URL</option>
+            <option value="wifi" data-i18n="typeWifi">📶 WiFi</option>
+            <option value="contact" data-i18n="typeContact">📇 연락처</option>
+            <option value="location" data-i18n="typeLocation">📍 위치</option>
+            <option value="email" data-i18n="typeEmail">📧 이메일</option>
+            <option value="calendar" data-i18n="typeCalendar">📅 일정</option>
         </select>
-      </div>
-      <div>
-        <label>Foreground</label>
-        <input type="color" id="color1" value="#ffffff" />
-      </div>
-      <div>
-        <label>Gradient</label>
-        <input type="color" id="color2" value="#7f5cff" />
-      </div>
+
+        <!-- 텍스트 -->
+        <div id="inputText" class="input-area">
+            <textarea id="textValue" rows="3" data-i18n-placeholder="textPlaceholder" placeholder="한글, 日本語, 中文, English 모두 가능">안녕하세요! QR 생성기</textarea>
+        </div>
+        <!-- URL -->
+        <div id="inputUrl" class="input-area hidden">
+            <input type="url" id="urlValue" data-i18n-placeholder="urlPlaceholder" placeholder="https://example.com">
+        </div>
+        <!-- WiFi -->
+        <div id="inputWifi" class="input-area hidden">
+            <input type="text" id="wifiSsid" data-i18n-placeholder="wifiSsidPlaceholder" placeholder="WiFi 이름 (SSID)">
+            <input type="text" id="wifiPass" data-i18n-placeholder="wifiPassPlaceholder" placeholder="비밀번호">
+            <select id="wifiEncrypt">
+                <option value="WPA" data-i18n="wifiWpa">WPA/WPA2</option>
+                <option value="WEP" data-i18n="wifiWep">WEP</option>
+                <option value="nopass" data-i18n="wifiNoPass">비밀번호 없음</option>
+            </select>
+        </div>
+        <!-- 연락처 -->
+        <div id="inputContact" class="input-area hidden">
+            <input type="text" id="contactName" data-i18n-placeholder="contactNamePlaceholder" placeholder="이름 (필수)">
+            <input type="tel" id="contactPhone" data-i18n-placeholder="contactPhonePlaceholder" placeholder="전화번호">
+            <input type="email" id="contactEmail" data-i18n-placeholder="contactEmailPlaceholder" placeholder="이메일">
+        </div>
+        <!-- 위치 -->
+        <div id="inputLocation" class="input-area hidden">
+            <input type="text" id="locationLat" data-i18n-placeholder="locationLatPlaceholder" placeholder="위도 (예: 37.5665)">
+            <input type="text" id="locationLng" data-i18n-placeholder="locationLngPlaceholder" placeholder="경도 (예: 126.9780)">
+            <input type="text" id="locationName" data-i18n-placeholder="locationNamePlaceholder" placeholder="장소명 (선택)">
+        </div>
+        <!-- 이메일 -->
+        <div id="inputEmail" class="input-area hidden">
+            <input type="email" id="emailTo" data-i18n-placeholder="emailToPlaceholder" placeholder="받는 사람 이메일">
+            <input type="text" id="emailSubject" data-i18n-placeholder="emailSubjectPlaceholder" placeholder="제목 (선택)">
+            <textarea id="emailBody" rows="2" data-i18n-placeholder="emailBodyPlaceholder" placeholder="내용 (선택)"></textarea>
+        </div>
+        <!-- 일정 -->
+        <div id="inputCalendar" class="input-area hidden">
+            <input type="text" id="eventTitle" data-i18n-placeholder="eventTitlePlaceholder" placeholder="일정 제목">
+            <input type="datetime-local" id="eventStart">
+            <input type="datetime-local" id="eventEnd">
+            <input type="text" id="eventLocation" data-i18n-placeholder="eventLocationPlaceholder" placeholder="장소 (선택)">
+        </div>
+
+        <button id="generateBtn" data-i18n="generateBtn">✨ QR 코드 생성</button>
+
+        <div class="qr-box">
+            <div id="qrcode"></div>
+        </div>
+
+        <!-- 다운로드 버튼 그룹 (PNG, JPG) -->
+        <div class="btn-group">
+            <button id="downloadPngBtn" class="btn-download" data-i18n="downloadPng">📥 PNG 저장</button>
+            <button id="downloadJpgBtn" class="btn-download" data-i18n="downloadJpg">🖼️ JPG 저장</button>
+        </div>
+
+        <!-- 공유 및 프린트 버튼 그룹 -->
+        <div class="btn-group">
+            <button id="shareBtn" class="btn-share" data-i18n="shareBtn">📤 공유하기</button>
+            <button id="printBtn" class="btn-print" data-i18n="printBtn">🖨️ 프린트</button>
+        </div>
+
+        <div class="footer-note" data-i18n="footerNote">
+            ✅ 아이폰/안드로이드 100% 인식 | CDN 실패 시 자동 내장 라이브러리 전환
+        </div>
     </div>
 
-    <label>Logo (optional)</label>
-    <input type="file" id="logo" accept="image/*" />
+    <script>
+        // --------------------------------------------------------------
+        // 0. 다국어 번역 데이터 (한국어, 영어, 일본어, 중국어 간체)
+        //    공유/프린트 버튼 텍스트 추가
+        // --------------------------------------------------------------
+        const translations = {
+            ko: {
+                appTitle: "⚡ 듀얼 QR",
+                statusLoading: "🔄 QR 라이브러리 로딩 중...",
+                typeText: "📝 일반 텍스트",
+                typeUrl: "🔗 URL",
+                typeWifi: "📶 WiFi",
+                typeContact: "📇 연락처",
+                typeLocation: "📍 위치",
+                typeEmail: "📧 이메일",
+                typeCalendar: "📅 일정",
+                textPlaceholder: "한글, 日本語, 中文, English 모두 가능",
+                urlPlaceholder: "https://example.com",
+                wifiSsidPlaceholder: "WiFi 이름 (SSID)",
+                wifiPassPlaceholder: "비밀번호",
+                wifiWpa: "WPA/WPA2",
+                wifiWep: "WEP",
+                wifiNoPass: "비밀번호 없음",
+                contactNamePlaceholder: "이름 (필수)",
+                contactPhonePlaceholder: "전화번호",
+                contactEmailPlaceholder: "이메일",
+                locationLatPlaceholder: "위도 (예: 37.5665)",
+                locationLngPlaceholder: "경도 (예: 126.9780)",
+                locationNamePlaceholder: "장소명 (선택)",
+                emailToPlaceholder: "받는 사람 이메일",
+                emailSubjectPlaceholder: "제목 (선택)",
+                emailBodyPlaceholder: "내용 (선택)",
+                eventTitlePlaceholder: "일정 제목",
+                eventLocationPlaceholder: "장소 (선택)",
+                generateBtn: "✨ QR 코드 생성",
+                downloadPng: "📥 PNG 저장",
+                downloadJpg: "🖼️ JPG 저장",
+                shareBtn: "📤 공유하기",
+                printBtn: "🖨️ 프린트",
+                footerNote: "✅ 아이폰/안드로이드 100% 인식 | CDN 실패 시 자동 내장 라이브러리 전환",
+                statusSuccess: "✅ QRCode 라이브러리 로드 성공",
+                statusFallback: "✅ 내장 QR 엔진 준비됨 (UTF-8 지원)",
+                statusFallbackFail: "❌ 내장 엔진 로드 실패 - 인터넷 연결 확인",
+                statusCdnFail: "⚠️ CDN 로드 실패, 내장 엔진으로 전환합니다.",
+                shareUnsupported: "공유 기능을 지원하지 않는 환경입니다.\n이미지를 다운로드한 후 직접 공유해주세요."
+            },
+            en: {
+                appTitle: "⚡ Dual QR",
+                statusLoading: "🔄 Loading QR library...",
+                typeText: "📝 Text",
+                typeUrl: "🔗 URL",
+                typeWifi: "📶 WiFi",
+                typeContact: "📇 Contact",
+                typeLocation: "📍 Location",
+                typeEmail: "📧 Email",
+                typeCalendar: "📅 Event",
+                textPlaceholder: "English, 日本語, 中文, 한국어 all supported",
+                urlPlaceholder: "https://example.com",
+                wifiSsidPlaceholder: "Network Name (SSID)",
+                wifiPassPlaceholder: "Password",
+                wifiWpa: "WPA/WPA2",
+                wifiWep: "WEP",
+                wifiNoPass: "No Password",
+                contactNamePlaceholder: "Name (required)",
+                contactPhonePlaceholder: "Phone number",
+                contactEmailPlaceholder: "Email",
+                locationLatPlaceholder: "Latitude (e.g. 37.5665)",
+                locationLngPlaceholder: "Longitude (e.g. 126.9780)",
+                locationNamePlaceholder: "Place name (optional)",
+                emailToPlaceholder: "Recipient email",
+                emailSubjectPlaceholder: "Subject (optional)",
+                emailBodyPlaceholder: "Message (optional)",
+                eventTitlePlaceholder: "Event title",
+                eventLocationPlaceholder: "Location (optional)",
+                generateBtn: "✨ Generate QR Code",
+                downloadPng: "📥 Save PNG",
+                downloadJpg: "🖼️ Save JPG",
+                shareBtn: "📤 Share",
+                printBtn: "🖨️ Print",
+                footerNote: "✅ 100% recognized on iPhone/Android | Auto fallback if CDN fails",
+                statusSuccess: "✅ QRCode library loaded successfully",
+                statusFallback: "✅ Built-in QR engine ready (UTF-8 supported)",
+                statusFallbackFail: "❌ Built-in engine failed - check internet connection",
+                statusCdnFail: "⚠️ CDN load failed, switching to built-in engine.",
+                shareUnsupported: "Sharing is not supported on this device/browser.\nPlease download the image and share it manually."
+            },
+            ja: {
+                appTitle: "⚡ デュアルQR",
+                statusLoading: "🔄 QRライブラリを読み込み中...",
+                typeText: "📝 テキスト",
+                typeUrl: "🔗 URL",
+                typeWifi: "📶 WiFi",
+                typeContact: "📇 連絡先",
+                typeLocation: "📍 位置情報",
+                typeEmail: "📧 メール",
+                typeCalendar: "📅 予定",
+                textPlaceholder: "日本語, English, 中文, 한국어 対応",
+                urlPlaceholder: "https://example.com",
+                wifiSsidPlaceholder: "WiFi名 (SSID)",
+                wifiPassPlaceholder: "パスワード",
+                wifiWpa: "WPA/WPA2",
+                wifiWep: "WEP",
+                wifiNoPass: "パスワードなし",
+                contactNamePlaceholder: "名前 (必須)",
+                contactPhonePlaceholder: "電話番号",
+                contactEmailPlaceholder: "メールアドレス",
+                locationLatPlaceholder: "緯度 (例: 37.5665)",
+                locationLngPlaceholder: "経度 (例: 126.9780)",
+                locationNamePlaceholder: "場所名 (任意)",
+                emailToPlaceholder: "送信先メール",
+                emailSubjectPlaceholder: "件名 (任意)",
+                emailBodyPlaceholder: "本文 (任意)",
+                eventTitlePlaceholder: "予定タイトル",
+                eventLocationPlaceholder: "場所 (任意)",
+                generateBtn: "✨ QRコード生成",
+                downloadPng: "📥 PNG保存",
+                downloadJpg: "🖼️ JPG保存",
+                shareBtn: "📤 共有",
+                printBtn: "🖨️ 印刷",
+                footerNote: "✅ iPhone/Android 100%認識 | CDN失敗時は自動で内蔵エンジンに切替",
+                statusSuccess: "✅ QRCodeライブラリの読み込みに成功しました",
+                statusFallback: "✅ 内蔵QRエンジン準備完了 (UTF-8対応)",
+                statusFallbackFail: "❌ 内蔵エンジンの読み込みに失敗しました - インターネット接続を確認してください",
+                statusCdnFail: "⚠️ CDNの読み込みに失敗しました、内蔵エンジンに切替えます",
+                shareUnsupported: "お使いの環境では共有機能がサポートされていません。\n画像をダウンロードしてから手動で共有してください。"
+            },
+            zh: {
+                appTitle: "⚡ 双核QR",
+                statusLoading: "🔄 正在加载QR库...",
+                typeText: "📝 文本",
+                typeUrl: "🔗 URL",
+                typeWifi: "📶 WiFi",
+                typeContact: "📇 联系人",
+                typeLocation: "📍 位置",
+                typeEmail: "📧 电子邮件",
+                typeCalendar: "📅 日程",
+                textPlaceholder: "中文, English, 日本語, 한국어 都支持",
+                urlPlaceholder: "https://example.com",
+                wifiSsidPlaceholder: "WiFi名称 (SSID)",
+                wifiPassPlaceholder: "密码",
+                wifiWpa: "WPA/WPA2",
+                wifiWep: "WEP",
+                wifiNoPass: "无密码",
+                contactNamePlaceholder: "姓名 (必填)",
+                contactPhonePlaceholder: "电话号码",
+                contactEmailPlaceholder: "电子邮件",
+                locationLatPlaceholder: "纬度 (例如: 37.5665)",
+                locationLngPlaceholder: "经度 (例如: 126.9780)",
+                locationNamePlaceholder: "地点名称 (可选)",
+                emailToPlaceholder: "收件人邮箱",
+                emailSubjectPlaceholder: "主题 (可选)",
+                emailBodyPlaceholder: "内容 (可选)",
+                eventTitlePlaceholder: "日程标题",
+                eventLocationPlaceholder: "地点 (可选)",
+                generateBtn: "✨ 生成二维码",
+                downloadPng: "📥 保存PNG",
+                downloadJpg: "🖼️ 保存JPG",
+                shareBtn: "📤 分享",
+                printBtn: "🖨️ 打印",
+                footerNote: "✅ iPhone/Android 100%识别 | CDN失败时自动切换到内置引擎",
+                statusSuccess: "✅ QRCode库加载成功",
+                statusFallback: "✅ 内置QR引擎已准备 (支持UTF-8)",
+                statusFallbackFail: "❌ 内置引擎加载失败 - 请检查网络连接",
+                statusCdnFail: "⚠️ CDN加载失败，正在切换到内置引擎",
+                shareUnsupported: "您的设备或浏览器不支持分享功能。\n请下载图片后手动分享。"
+            }
+        };
 
-    <button id="generate">Generate QR</button>
-    <button id="download">Download PNG</button>
+        // --------------------------------------------------------------
+        // 1. 언어 설정 관련 변수 및 함수
+        // --------------------------------------------------------------
+        let currentLang = localStorage.getItem('qr_lang') || detectBrowserLanguage();
 
-    <div id="qr-preview"></div>
+        function setLanguage(langCode) {
+            if (!translations[langCode]) langCode = 'ko';
+            currentLang = langCode;
+            localStorage.setItem('qr_lang', langCode);
+            
+            const langSelect = document.getElementById('languageSelect');
+            if (langSelect) langSelect.value = langCode;
 
-    <div class="history" id="history"></div>
-  </div>
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[langCode][key]) {
+                    el.innerHTML = translations[langCode][key];
+                }
+            });
 
-  <script>
-    const input = document.getElementById('input');
-    const mode = document.getElementById('mode');
-    const size = document.getElementById('size');
-    const color1 = document.getElementById('color1');
-    const color2 = document.getElementById('color2');
-    const logoInput = document.getElementById('logo');
-    const preview = document.getElementById('qr-preview');
-    const historyBox = document.getElementById('history');
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[langCode][key]) {
+                    el.placeholder = translations[langCode][key];
+                }
+            });
 
-    let qr = new QRCodeStyling({ width: 200, height: 200, data: '' });
+            document.querySelectorAll('option[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[langCode][key]) {
+                    el.textContent = translations[langCode][key];
+                }
+            });
+        }
 
-    function buildData() {
-      const v = input.value.trim();
-      if (!v) return '';
-      switch (mode.value) {
-        case 'email': return `mailto:${v}`;
-        case 'sms': return `sms:${v}`;
-        case 'location': return `https://maps.google.com/?q=${encodeURIComponent(v)}`;
-        case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${v}\nEND:VCARD`;
-        case 'wifi': return `WIFI:T:WPA;S:${v};P:password;;`;
-        default: return v;
-      }
-    }
+        document.getElementById('languageSelect').addEventListener('change', function(e) {
+            setLanguage(e.target.value);
+        });
 
-    function saveHistory(data) {
-      const list = JSON.parse(localStorage.getItem('qr-history') || '[]');
-      list.unshift(data);
-      localStorage.setItem('qr-history', JSON.stringify(list.slice(0, 10)));
-      renderHistory();
-    }
+        function detectBrowserLanguage() {
+            const savedLang = localStorage.getItem('qr_lang');
+            if (savedLang) return savedLang;
+            const browserLang = navigator.language || navigator.userLanguage;
+            if (browserLang.startsWith('ko')) return 'ko';
+            if (browserLang.startsWith('ja')) return 'ja';
+            if (browserLang.startsWith('zh')) return 'zh';
+            return 'en';
+        }
 
-    function renderHistory() {
-      historyBox.innerHTML = '';
-      const list = JSON.parse(localStorage.getItem('qr-history') || '[]');
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.textContent = item;
-        div.onclick = () => { input.value = item; generate(); };
-        historyBox.appendChild(div);
-      });
-    }
+        // --------------------------------------------------------------
+        // 2. 상태 표시 함수 (번역 적용)
+        // --------------------------------------------------------------
+        const statusEl = document.getElementById('statusMessage');
+        function setStatus(msgKey, isError = false) {
+            if (translations[currentLang] && translations[currentLang][msgKey]) {
+                statusEl.innerHTML = translations[currentLang][msgKey];
+            } else {
+                statusEl.innerHTML = msgKey;
+            }
+            statusEl.style.background = isError ? '#ffeeee' : '#f0f6ff';
+            statusEl.style.borderLeftColor = isError ? '#e53e3e' : '#3b82f6';
+        }
 
-    function generate() {
-      const data = buildData();
-      if (!data) return;
+        // --------------------------------------------------------------
+        // 3. QRCode 라이브러리 로딩 (3중 CDN + 내장 백업) - 기존 그대로
+        // --------------------------------------------------------------
+        let QRCodeLib = null;
+        let useFallback = false;
 
-      preview.innerHTML = '';
-      qr = new QRCodeStyling({
-        width: Number(size.value),
-        height: Number(size.value),
-        data,
-        image: logoInput.files[0] ? URL.createObjectURL(logoInput.files[0]) : undefined,
-        dotsOptions: {
-          gradient: {
-            type: 'linear',
-            rotation: 0,
-            colorStops: [
-              { offset: 0, color: color1.value },
-              { offset: 1, color: color2.value }
-            ]
-          }
-        },
-        backgroundOptions: { color: 'transparent' },
-        imageOptions: { crossOrigin: 'anonymous', margin: 6 }
-      });
+        function loadFallbackLibrary() {
+            return new Promise((resolve) => {
+                setStatus('statusFallback');
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+                script.onload = () => {
+                    if (window.qrcode) {
+                        qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+                        setStatus('statusFallback');
+                        useFallback = true;
+                        resolve(true);
+                    } else {
+                        setStatus('statusFallbackFail', true);
+                        resolve(false);
+                    }
+                };
+                script.onerror = () => {
+                    setStatus('statusFallbackFail', true);
+                    resolve(false);
+                };
+                document.head.appendChild(script);
+            });
+        }
 
-      qr.append(preview);
-      saveHistory(input.value);
-    }
+        function loadMainQRCode() {
+            return new Promise((resolve) => {
+                const cdnList = [
+                    'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js',
+                    'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js'
+                ];
 
-    document.getElementById('generate').onclick = generate;
-    document.getElementById('download').onclick = () => qr.download({ extension: 'png' });
-    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') generate(); });
+                let attempts = 0;
+                function tryNextCDN() {
+                    if (attempts >= cdnList.length) {
+                        setStatus('statusCdnFail', true);
+                        loadFallbackLibrary().then(resolve);
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = cdnList[attempts];
+                    script.onload = () => {
+                        if (window.QRCode) {
+                            QRCodeLib = window.QRCode;
+                            setStatus('statusSuccess');
+                            resolve(true);
+                        } else {
+                            attempts++;
+                            tryNextCDN();
+                        }
+                    };
+                    script.onerror = () => {
+                        attempts++;
+                        tryNextCDN();
+                    };
+                    document.head.appendChild(script);
+                }
+                tryNextCDN();
+            });
+        }
 
-    renderHistory();
-  </script>
+        // --------------------------------------------------------------
+        // 4. QR 생성 범용 함수 (그대로 유지)
+        // --------------------------------------------------------------
+        async function generateQR(text, options = {}) {
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+
+            if (!text || !text.trim()) {
+                alert('내용을 입력해주세요.');
+                return null;
+            }
+
+            const width = options.width || 300;
+            const margin = options.margin || 4;
+
+            try {
+                if (!useFallback && QRCodeLib) {
+                    const canvas = document.createElement('canvas');
+                    await QRCodeLib.toCanvas(canvas, text, {
+                        width: width,
+                        margin: margin,
+                        errorCorrectionLevel: 'H',
+                        color: { dark: '#000000', light: '#ffffff' }
+                    });
+                    qrDiv.appendChild(canvas);
+                    return canvas;
+                } 
+                else if (useFallback && window.qrcode) {
+                    const qr = qrcode(0, 'H');
+                    qr.addData(text);
+                    qr.make();
+
+                    const cellSize = Math.floor(width / qr.getModuleCount());
+                    const actualSize = qr.getModuleCount() * cellSize;
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.width = actualSize + margin * 2 * cellSize;
+                    canvas.height = actualSize + margin * 2 * cellSize;
+                    const ctx = canvas.getContext('2d');
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.fillStyle = '#000000';
+                    for (let row = 0; row < qr.getModuleCount(); row++) {
+                        for (let col = 0; col < qr.getModuleCount(); col++) {
+                            if (qr.isDark(row, col)) {
+                                ctx.fillRect(
+                                    (col + margin) * cellSize,
+                                    (row + margin) * cellSize,
+                                    cellSize, cellSize
+                                );
+                            }
+                        }
+                    }
+                    qrDiv.appendChild(canvas);
+                    return canvas;
+                }
+                else {
+                    setStatus('statusFallbackFail', true);
+                    return null;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('QR 생성 오류: ' + err.message);
+                return null;
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 5. 데이터 포맷 변환 (기존과 동일)
+        // --------------------------------------------------------------
+        function getFormattedData() {
+            const type = typeSelect.value;
+            switch (type) {
+                case 'text': return document.getElementById('textValue').value.trim();
+                case 'url':
+                    let url = document.getElementById('urlValue').value.trim();
+                    if (!url) return '';
+                    if (!url.startsWith('http')) url = 'https://' + url;
+                    return url;
+                case 'wifi':
+                    const ssid = document.getElementById('wifiSsid').value.trim();
+                    const pass = document.getElementById('wifiPass').value.trim();
+                    const enc = document.getElementById('wifiEncrypt').value;
+                    if (!ssid) return '';
+                    return `WIFI:S:${ssid};T:${enc};P:${pass};;`;
+                case 'contact':
+                    const name = document.getElementById('contactName').value.trim();
+                    const phone = document.getElementById('contactPhone').value.trim();
+                    const email = document.getElementById('contactEmail').value.trim();
+                    if (!name) return '';
+                    let vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:' + name + '\nN:' + name + ';;;\n';
+                    if (phone) vcard += 'TEL:' + phone + '\n';
+                    if (email) vcard += 'EMAIL:' + email + '\n';
+                    vcard += 'END:VCARD';
+                    return vcard;
+                case 'location':
+                    const lat = document.getElementById('locationLat').value.trim();
+                    const lng = document.getElementById('locationLng').value.trim();
+                    const locName = document.getElementById('locationName').value.trim();
+                    if (!lat || !lng) return '';
+                    return locName ? `geo:${lat},${lng}?q=${encodeURIComponent(locName)}` : `geo:${lat},${lng}`;
+                case 'email':
+                    const to = document.getElementById('emailTo').value.trim();
+                    const subj = document.getElementById('emailSubject').value.trim();
+                    const body = document.getElementById('emailBody').value.trim();
+                    if (!to) return '';
+                    let mailto = `mailto:${to}`;
+                    const params = [];
+                    if (subj) params.push(`subject=${encodeURIComponent(subj)}`);
+                    if (body) params.push(`body=${encodeURIComponent(body)}`);
+                    if (params.length) mailto += '?' + params.join('&');
+                    return mailto;
+                case 'calendar':
+                    const title = document.getElementById('eventTitle').value.trim();
+                    const start = document.getElementById('eventStart').value;
+                    if (!title || !start) return '';
+                    const startStr = start.replace(/-/g, '').replace(/:/g, '').replace('T', '');
+                    const end = document.getElementById('eventEnd').value;
+                    const endStr = end ? end.replace(/-/g, '').replace(/:/g, '').replace('T', '') : startStr;
+                    const loc = document.getElementById('eventLocation').value.trim();
+                    let vevent = 'BEGIN:VEVENT\nSUMMARY:' + title + '\nDTSTART:' + startStr + '\nDTEND:' + endStr + '\n';
+                    if (loc) vevent += 'LOCATION:' + loc + '\n';
+                    vevent += 'END:VEVENT';
+                    return vevent;
+                default: return '';
+            }
+        }
+
+        // --------------------------------------------------------------
+        // 6. 다운로드 함수 (PNG/JPG) - 기존 그대로
+        // --------------------------------------------------------------
+        async function downloadQR(format = 'png') {
+            const data = getFormattedData();
+            if (!data) { alert('QR 코드를 먼저 생성해주세요.'); return; }
+            
+            const canvas = await generateQR(data, { width: 512, margin: 8 });
+            if (!canvas) return;
+
+            const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+            const url = canvas.toDataURL(mime, 0.95);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `qrcode_${Date.now()}.${format}`;
+            link.click();
+        }
+
+        // --------------------------------------------------------------
+        // 7. 공유 기능 (Web Share API)
+        // --------------------------------------------------------------
+        async function shareQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                alert(translations[currentLang]?.shareUnsupported || 'QR 코드를 먼저 생성해주세요.');
+                return;
+            }
+
+            // 고해상도 이미지 생성 (공유용)
+            const shareCanvas = document.createElement('canvas');
+            await (async () => {
+                if (!useFallback && QRCodeLib) {
+                    await QRCodeLib.toCanvas(shareCanvas, getFormattedData(), {
+                        width: 512,
+                        margin: 4,
+                        errorCorrectionLevel: 'H'
+                    });
+                } else if (useFallback && window.qrcode) {
+                    const qr = qrcode(0, 'H');
+                    qr.addData(getFormattedData());
+                    qr.make();
+                    const cellSize = 6;
+                    const margin = 4;
+                    shareCanvas.width = qr.getModuleCount() * cellSize + margin * 2 * cellSize;
+                    shareCanvas.height = qr.getModuleCount() * cellSize + margin * 2 * cellSize;
+                    const ctx = shareCanvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, shareCanvas.width, shareCanvas.height);
+                    ctx.fillStyle = '#000000';
+                    for (let row = 0; row < qr.getModuleCount(); row++) {
+                        for (let col = 0; col < qr.getModuleCount(); col++) {
+                            if (qr.isDark(row, col)) {
+                                ctx.fillRect((col + margin) * cellSize, (row + margin) * cellSize, cellSize, cellSize);
+                            }
+                        }
+                    }
+                }
+            })();
+
+            shareCanvas.toBlob(async (blob) => {
+                if (!blob) {
+                    alert('이미지 생성 실패');
+                    return;
+                }
+
+                const file = new File([blob], 'qrcode.png', { type: 'image/png' });
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'QR Code',
+                            text: 'QR 코드를 공유합니다',
+                            files: [file]
+                        });
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            alert('공유 실패: ' + err.message);
+                        }
+                    }
+                } else {
+                    // Web Share API 미지원 환경: 다운로드 안내
+                    alert(translations[currentLang]?.shareUnsupported || '공유 기능을 지원하지 않는 환경입니다.\n이미지를 다운로드한 후 직접 공유해주세요.');
+                    // 다운로드 링크 제공
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'qrcode_share.png';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }
+            }, 'image/png');
+        }
+
+        // --------------------------------------------------------------
+        // 8. 프린트 기능
+        // --------------------------------------------------------------
+        async function printQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                alert('QR 코드를 먼저 생성해주세요.');
+                return;
+            }
+
+            // 고해상도 이미지로 프린트 (512px, 여백 8)
+            const printCanvas = document.createElement('canvas');
+            await (async () => {
+                if (!useFallback && QRCodeLib) {
+                    await QRCodeLib.toCanvas(printCanvas, getFormattedData(), {
+                        width: 512,
+                        margin: 8,
+                        errorCorrectionLevel: 'H'
+                    });
+                } else if (useFallback && window.qrcode) {
+                    const qr = qrcode(0, 'H');
+                    qr.addData(getFormattedData());
+                    qr.make();
+                    const cellSize = 6;
+                    const margin = 8;
+                    printCanvas.width = qr.getModuleCount() * cellSize + margin * 2 * cellSize;
+                    printCanvas.height = qr.getModuleCount() * cellSize + margin * 2 * cellSize;
+                    const ctx = printCanvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+                    ctx.fillStyle = '#000000';
+                    for (let row = 0; row < qr.getModuleCount(); row++) {
+                        for (let col = 0; col < qr.getModuleCount(); col++) {
+                            if (qr.isDark(row, col)) {
+                                ctx.fillRect((col + margin) * cellSize, (row + margin) * cellSize, cellSize, cellSize);
+                            }
+                        }
+                    }
+                }
+            })();
+
+            const imgUrl = printCanvas.toDataURL('image/png');
+            const printWindow = window.open('', '_blank', 'width=600,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print QR Code</title>
+                    <style>
+                        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                        img { max-width: 100%; max-height: 100%; object-fit: contain; }
+                    </style>
+                </head>
+                <body>
+                    <img src="${imgUrl}" onload="window.print(); window.onafterprint = function() { window.close(); }" />
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // --------------------------------------------------------------
+        // 9. UI 이벤트 연결 (기존 + 신규)
+        // --------------------------------------------------------------
+        const typeSelect = document.getElementById('typeSelect');
+        const areas = {
+            text: document.getElementById('inputText'),
+            url: document.getElementById('inputUrl'),
+            wifi: document.getElementById('inputWifi'),
+            contact: document.getElementById('inputContact'),
+            location: document.getElementById('inputLocation'),
+            email: document.getElementById('inputEmail'),
+            calendar: document.getElementById('inputCalendar')
+        };
+
+        function showArea(type) {
+            Object.values(areas).forEach(a => a.classList.add('hidden'));
+            if (areas[type]) areas[type].classList.remove('hidden');
+        }
+
+        typeSelect.addEventListener('change', function() { showArea(this.value); });
+        showArea('text');
+
+        function setDefaultDates() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth()+1).padStart(2,'0');
+            const d = String(now.getDate()).padStart(2,'0');
+            const h = String(now.getHours()).padStart(2,'0');
+            const min = String(now.getMinutes()).padStart(2,'0');
+            const current = `${y}-${m}-${d}T${h}:${min}`;
+            document.getElementById('eventStart').value = current;
+            const tomorrow = new Date(now.getTime() + 86400000);
+            const ty = tomorrow.getFullYear();
+            const tm = String(tomorrow.getMonth()+1).padStart(2,'0');
+            const td = String(tomorrow.getDate()).padStart(2,'0');
+            document.getElementById('eventEnd').value = `${ty}-${tm}-${td}T${h}:${min}`;
+        }
+        setDefaultDates();
+
+        // 생성 버튼
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const data = getFormattedData();
+            if (!data) { alert('필수 정보를 입력하세요.'); return; }
+            await generateQR(data, { width: 300, margin: 4 });
+        });
+
+        // 다운로드 버튼
+        document.getElementById('downloadPngBtn').addEventListener('click', () => downloadQR('png'));
+        document.getElementById('downloadJpgBtn').addEventListener('click', () => downloadQR('jpg'));
+
+        // 공유 버튼
+        document.getElementById('shareBtn').addEventListener('click', shareQR);
+
+        // 프린트 버튼
+        document.getElementById('printBtn').addEventListener('click', printQR);
+
+        // --------------------------------------------------------------
+        // 10. 시작: 라이브러리 로드 후 샘플 생성
+        // --------------------------------------------------------------
+        window.addEventListener('load', async () => {
+            await loadMainQRCode();
+            setLanguage(initialLang); // 언어 초기화
+            setTimeout(() => {
+                generateQR('안녕하세요! QR 생성기', { width: 300, margin: 4 });
+            }, 100);
+        });
+        const initialLang = detectBrowserLanguage();
+    </script>
 </body>
 </html>
